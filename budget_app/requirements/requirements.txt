@@ -1,0 +1,5 @@
+textual==0.47.1
+pandas==2.1.4
+pandas-stubs==2.1.4.231227
+mypy==1.8.0
+ruff==0.1.4
