@@ -6,8 +6,8 @@ import pandas
 class Table(ABC):
     def __init__(self, transactions: pandas.DataFrame) -> None:
         self.table = transactions
-        self.hidden_columns = ["Selected", "index"]
         self.ui_table = self.table
+        self.hidden_columns = ["Selected", "index"]
 
     def get_columns(self) -> list[str]:
         return self._create_ui_table().columns.tolist()

@@ -33,7 +33,8 @@ from textual.widgets import (
     TabbedContent,
 )
 
-from pages.transactions import Transactions
+from budget_app.pages.transactions import Transactions
+from budget_app.pages.pivot import Pivot
 
 
 class Home(Static):
@@ -44,11 +45,6 @@ class Home(Static):
 class Upload(Static):
     def compose(self) -> ComposeResult:
         yield Label("Upload!")
-
-
-class Pivot(Static):
-    def compose(self) -> ComposeResult:
-        yield Label("Pivot!")
 
 
 class Graph(Static):
