@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC
 
 import pandas
@@ -5,8 +7,8 @@ import pandas
 
 class Table(ABC):
     def __init__(self, transactions: pandas.DataFrame) -> None:
-        self.table = transactions
-        self.ui_table = self.table
+        self.transactions = transactions
+        self.ui_table = self.transactions.table
         self.hidden_columns = ["Selected", "index"]
 
     def get_columns(self) -> list[str]:
@@ -17,7 +19,7 @@ class Table(ABC):
 
     def get_column_values(self, column_name: str) -> list:
         table = (
-            self.table[[str(column_name), "Selected"]]
+            self.transactions.table[[str(column_name), "Selected"]]
             .drop_duplicates()
             .sort_values(
                 by=[str(column_name), "Selected"], ascending=[True, False]
@@ -34,10 +36,10 @@ class Table(ABC):
         self.ui_table = self.ui_table.reset_index(drop=True)
 
     def update_selected(self, column_name: str, selected_values: list) -> None:
-        mask = self.table[str(column_name)].isin(selected_values)
-        self.table.loc[~mask, "Selected"] = False
-        self.table.loc[mask, "Selected"] = True
-        self.ui_table = self.table[mask]
+        mask = self.transactions.table[str(column_name)].isin(selected_values)
+        self.transactions.table.loc[~mask, "Selected"] = False
+        self.transactions.table.loc[mask, "Selected"] = True
+        self.ui_table = self.transactions.table[mask]
         self.ui_table = self.ui_table.reset_index(drop=True)
 
     def edit_cell(
@@ -51,10 +53,24 @@ class Table(ABC):
         elif column_name == "Amount":
             input_value = float(input_value)
         self.ui_table.at[row_number, column_name] = input_value
-        self.table.at[
+        self.transactions.table.at[
             self.ui_table.loc[row_number]["index"], column_name
         ] = input_value
+        print(self)
+        print(self.transactions.table)
 
     def _create_ui_table(self) -> pandas.DataFrame:
         self.ui_table = self.ui_table.reset_index(drop=True)
         return self.ui_table.drop(columns=self.hidden_columns)
+
+    def update(self) -> None:
+        self.ui_table = self.transactions.table
+        sort_key, ascending = self._get_sort_key()
+        self.sort(sort_key, ascending)
+
+    def _get_sort_key(self) -> bool | None:
+        for column in self.ui_table.columns:
+            if self.ui_table[column].is_monotonic_increasing:
+                return column, True
+            elif self.ui_table[column].is_monotonic_decreasing:
+                return column, False

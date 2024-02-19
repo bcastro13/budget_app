@@ -9,7 +9,9 @@ class InvestigatorTable(Table):
         self.hidden_columns.append("month_year")
 
     def update_table(self, date: str, category: str) -> None:
-        self.ui_table = self.table[self.table["month_year"] == date]
+        self.ui_table = self.transactions.table[
+            self.transactions.table["month_year"] == date
+        ]
 
         if category != "Total":
             self.ui_table = self.ui_table[

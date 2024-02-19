@@ -12,6 +12,10 @@ from textual.widgets import (
     Static,
 )
 
+from budget_app.injection import (
+    table_updater,
+)
+
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -65,6 +69,8 @@ class CellEditor(ModalScreen):
         self.table.edit_cell(
             self.column_name, self.row_number, input_field.value
         )
+        table_updater.update_tables()
+        print(self.table.transactions.table)
         self.dismiss(True)
 
 
@@ -92,6 +98,7 @@ class TableWidget(Static):
         data_table.add_rows(self.table.get_rows())
 
     def action_sort_column(self) -> None:
+        print(self.table.transactions.table)
         table = self.query_one(DataTable)
         sort_key = table.ordered_columns[table.cursor_column].label
         self.table.sort(sort_key, self.sort_reverse(sort_key))

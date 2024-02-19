@@ -35,7 +35,6 @@ class Pivot(Static):
         date = str(table.ordered_columns[table.cursor_column].label)
         row_num = table.cursor_row
         category = table.get_cell_at(Coordinate(row_num, 0))
-        print(category)
         if date != "Category":
             investigator_table.update_table(date, category)
             self.app.push_screen(

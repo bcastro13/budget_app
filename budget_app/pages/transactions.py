@@ -7,4 +7,4 @@ from budget_app.widgets.table_widget import TableWidget
 
 class Transactions(Static):
     def compose(self) -> ComposeResult:
-        yield TableWidget(transaction_table, "transactions")
+        yield TableWidget(transaction_table, "transactions_table")
