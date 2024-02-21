@@ -23,7 +23,6 @@
 
 from random import randint
 
-from textual import on
 from textual.app import App, ComposeResult
 from textual.widgets import (
     Digits,
@@ -36,7 +35,6 @@ from textual.widgets import (
 
 from budget_app.pages.transactions import Transactions
 from budget_app.pages.pivot import Pivot
-from budget_app.injection import transaction_table
 
 
 class Home(Static):
@@ -86,13 +84,6 @@ class BudgetApp(App):
                 yield Budget()
             with TabPane("Transactions", id="transactions"):
                 yield Transactions()
-
-    @on(TabbedContent.TabActivated)
-    def refresh_table(self) -> None:
-        table = self.query("#transactions_table").first()
-        table.clear(columns=True)
-        table.add_columns(*transaction_table.get_columns())
-        table.add_rows(transaction_table.get_rows())
 
 
 if __name__ == "__main__":

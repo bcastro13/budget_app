@@ -7,5 +7,6 @@ class TableUpdater:
 
     def update_tables(self) -> None:
         for table in self.tables:
+            print("UPDATING TABLES----------------------")
             print(table.transactions.table)
             table.update()

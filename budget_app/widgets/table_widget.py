@@ -12,10 +12,6 @@ from textual.widgets import (
     Static,
 )
 
-from budget_app.injection import (
-    table_updater,
-)
-
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -69,8 +65,6 @@ class CellEditor(ModalScreen):
         self.table.edit_cell(
             self.column_name, self.row_number, input_field.value
         )
-        table_updater.update_tables()
-        print(self.table.transactions.table)
         self.dismiss(True)
 
 
@@ -79,6 +73,7 @@ class TableWidget(Static):
         ("s", "sort_column()", "Sort Column"),
         ("f", "filter_table", "Filter Table"),
         ("e", "edit_cell", "Edit Cell"),
+        ("r", "refresh_table", "Refresh Table"),
     ]
     CURSORS = cycle(["column", "row", "cell"])
 
@@ -94,11 +89,10 @@ class TableWidget(Static):
 
     def on_mount(self) -> None:
         data_table = self.query_one(DataTable)
-        data_table.add_columns(*self.table.get_columns())
-        data_table.add_rows(self.table.get_rows())
+        data_table.add_columns(*self.table.get_columns(True))
+        data_table.add_rows(self.table.get_rows(True))
 
     def action_sort_column(self) -> None:
-        print(self.table.transactions.table)
         table = self.query_one(DataTable)
         sort_key = table.ordered_columns[table.cursor_column].label
         self.table.sort(sort_key, self.sort_reverse(sort_key))
@@ -120,6 +114,9 @@ class TableWidget(Static):
             FilterSelector(self.table, column_name), self.update_table
         )
 
+    def action_refresh_table(self) -> None:
+        self.update_table(None)
+
     def action_edit_cell(self) -> None:
         table = self.query_one(DataTable)
         column_name = table.ordered_columns[table.cursor_column].label
@@ -134,8 +131,8 @@ class TableWidget(Static):
             self.update_table,
         )
 
-    def update_table(self, val: bool):
+    def update_table(self, normal_update: bool):
         table = self.query_one(DataTable)
         table.clear(columns=True)
-        table.add_columns(*self.table.get_columns())
-        table.add_rows(self.table.get_rows())
+        table.add_columns(*self.table.get_columns(normal_update))
+        table.add_rows(self.table.get_rows(normal_update))
